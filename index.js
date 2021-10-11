@@ -3,16 +3,22 @@ const submitHandler = (event) => {
 
   const form = document.querySelector("#park-form");
   const formData = new FormData(form);
-
   // Keep track of if any errors are found
   let hasErrors = false;
 
-  // Validation code skipped for brevity
-  // ...
+  formData.forEach((value, key) => {
+    let errorId = `#${key}-error`;
+    if (value.trim() === "") {
+      document.querySelector(errorId).style.display = "block";
+      hasErrors = true;
+    } else {
+      document.querySelector(errorId).style.display = "none";
+    }
+  });
 
-  // If there are no errors
+  // if there are no errors
   if (!hasErrors) {
-    // Create an empty object
+    // create an empty object
     const park = {
       name: formData.get("name"),
       location: formData.get("location"),
@@ -30,8 +36,10 @@ const submitHandler = (event) => {
 
 // function to handler favorite button clicks
 const favoriteButtonClickHandler = (event) => {
-  const park = event.target.parentNode;
-  park.style.backgroundColor = "#c8e6c9";
+  if (event.target && event.target.nodeName == "BUTTON") {
+    const park = event.target.parentNode;
+    park.style.backgroundColor = "#c8e6c9";
+  }
 };
 
 // function for sorting by name
@@ -49,8 +57,8 @@ const sortByName = (parkA, parkB) => {
 
 // function for sorting by rating
 const sortByRating = (parkA, parkB) => {
-  const parkARating = parkA.rating;
-  const parkBRating = parkB.rating;
+  const parkARating = parseFloat(parkA.rating);
+  const parkBRating = parseFloat(parkB.rating);
   return parkBRating - parkARating;
 };
 
@@ -58,10 +66,8 @@ const sortByRating = (parkA, parkB) => {
 const nameSorterClickHandler = (event) => {
   event.preventDefault();
 
-  // sort the array
   parks.sort(sortByName);
 
-  // render
   render();
 };
 
@@ -69,15 +75,13 @@ const nameSorterClickHandler = (event) => {
 const ratingSorterClickHandler = (event) => {
   event.preventDefault();
 
-  // sort the array
   parks.sort(sortByRating);
 
-  // render
   render();
 };
 
 const renderOnePark = (park) => {
-  // Get the individual properties of the park
+  // get the individual properties of the park
   const { name, location, description, established, area, rating } = park;
 
   const content = `
@@ -106,16 +110,16 @@ const renderOnePark = (park) => {
 };
 
 const render = () => {
-  // Get the parent element
+  // get the parent element
   const main = document.querySelector("main");
 
-  // Empty the parent element
+  // 1. empty the parent element
   main.innerHTML = "";
 
-  // Get the parks HTML
+  // 2. get the parks HTML
   const content = parks.map(renderOnePark).join("");
 
-  // Set the `innerHTML` of parent element
+  // 3. Set innerHTML of parent element
   main.innerHTML = content;
 };
 
@@ -134,12 +138,10 @@ const main = () => {
   ratingSorter.addEventListener("click", ratingSorterClickHandler);
 
   // select all the buttons for all the parks
-  const allBtns = document.querySelectorAll(".rate-button");
+  const main = document.querySelector("main");
 
-  // iterate the list of buttons and add an event handler to each
-  allBtns.forEach((btn) => {
-    btn.addEventListener("click", favoriteButtonClickHandler);
-  });
+  // add event handler to the main
+  main.addEventListener("click", favoriteButtonClickHandler);
 
   // get the form element
   const form = document.querySelector("#park-form");
@@ -147,7 +149,7 @@ const main = () => {
   // attach the submit handler
   form.addEventListener("submit", submitHandler);
 
-  // render
+  // call render()
   render();
 };
 
